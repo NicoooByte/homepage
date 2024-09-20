@@ -1,5 +1,15 @@
 const list = document.querySelectorAll('li');
-const unicodeChars = ['▒', '░', '▓', '█', '▐', '▌', '▀', '▄'];
+const unicodeChars = [
+    String.fromCodePoint(0x2590), // '▒'
+    String.fromCodePoint(0x2591), // '░'
+    String.fromCodePoint(0x2593), // '▓'
+    String.fromCodePoint(0x2588), // '█'
+    String.fromCodePoint(0x250C), // '▐'
+    String.fromCodePoint(0x2502), // '▌'
+    String.fromCodePoint(0x2580), // '▀'
+    String.fromCodePoint(0x2584)  // '▄'
+];
+
 
 let intervalId;
 

@@ -39,7 +39,7 @@ let output = document.getElementById("output");
 output.style.display = "revert"
 output.style.height = "fit-content"
 output.innerHTML = ":";
-let img_height = Math.floor((window.innerHeight + 101) / output.clientHeight);
+let img_height = Math.floor((window.innerHeight + 100) / output.clientHeight) + 1;
 output.style.height = ""
 let img_width = Math.floor(img_height * 1.7);
 output.innerHTML = ":".repeat(img_width)
@@ -51,12 +51,11 @@ var currentPage = window.location.pathname.split('/').pop();
 var imgMe = document.getElementById("me");
 
 let bri = 0
-if (currentPage == "index.html") {
+if (currentPage == "index.html" || currentPage == "") {
     document.getElementById('right').classList.add("fade-in");
     animateMe(bri);
     const startUp = setInterval(() => {
         bri += 5;
-        bri = bri % 200;
         if (bri % 200 == 0) {
             clearInterval(startUp);
             return clearInterval;
