@@ -3,15 +3,13 @@ const canvas = document.getElementById('canvas');
 const c = canvas.getContext('2d');
 
 // Set the canvas dimensions
-//canvas.width
-let elementWidth = window.innerWidth - widthUncidodeLine; // new width
+let elementWidth = window.innerWidth - widthUncidodeLine;
 canvas.width = elementWidth;
-canvas.height = window.innerHeight; // new height
+canvas.height = window.innerHeight;
 
-// Function to draw a square
 function drawSquare(x, y, size) {
   // Map size to a grayscale color
-  var gray = Math.floor(255 * (1 - size / 400)); // assuming size doesn't exceed 100
+  var gray = Math.floor(255 * (1 - size / 400));
   c.strokeStyle = 'rgb(' + gray + ',' + gray + ',' + gray + ')';
   c.beginPath();
   c.rect(x - size / 2, y - size / 2, size, size);
@@ -20,7 +18,6 @@ function drawSquare(x, y, size) {
 
 var gridSize = 50;
 
-// Function to draw the background pattern
 function drawBackground(mouseX, mouseY, targetSize, waveDistance) {
   c.clearRect(0, 0, canvas.width, canvas.height);
   c.strokeStyle = 'white';
@@ -34,7 +31,7 @@ function drawBackground(mouseX, mouseY, targetSize, waveDistance) {
       let size = 10;
       size *= distanceToMouse / 10;
 
-      // Apply the shockwave effect
+      // Apply the "shockwave" effect
       const distanceToCenter = Math.sqrt(Math.pow(x - canvas.width / 2, 2) + Math.pow(y - canvas.height / 2, 2));
       if (distanceToCenter < waveDistance) {
         const scaleFactor = 1 - distanceToCenter / waveDistance;
@@ -65,23 +62,19 @@ function animate() {
   targetWaveDistance += waveSpeed;
 
   drawBackground(mouseX, mouseY, 10, currentWaveDistance);
-
   requestAnimationFrame(animate);
 }
 
-// Handle mouse movements
 window.addEventListener('mousemove', (event) => {
   const rect = canvas.getBoundingClientRect();
   mouseX = event.clientX - rect.left;
   mouseY = event.clientY - rect.top;
 });
 
-// Handle key presses
 document.addEventListener('keydown', () => {
   if (gridSize > 20) {
     gridSize -= 1;
   }
 });
 
-// Start the animation
 animate();

@@ -121,6 +121,7 @@ for (let i = 0; i < rlePattern.length; i++) {
 
 let game = new GameOfLife(startingPositions, gridSize2, 70);
 game.printGrid(element);
+game.nextGeneration();
 
 setInterval(() => {
     game.printGrid(element);
@@ -138,7 +139,6 @@ function getCharacterWidth(character, font) {
 
     const width = offScreenElement.offsetWidth;
     height = offScreenElement.offsetHeight;
-
     document.body.removeChild(offScreenElement);
 
     return width;

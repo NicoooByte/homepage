@@ -1,4 +1,105 @@
-// Function to generate a random Sudoku puzzle
+function isValid(board, row, col, num) {
+    // Check the row
+    for (let x = 0; x < 9; x++) {
+        if (board[row][x] === num) {
+            return false;
+        }
+    }
+
+    // Check the column
+    for (let x = 0; x < 9; x++) {
+        if (board[x][col] === num) {
+            return false;
+        }
+    }
+
+    // Check the 3x3 box
+    const startRow = Math.floor(row / 3) * 3;
+    const startCol = Math.floor(col / 3) * 3;
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            if (board[startRow + i][startCol + j] === num) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+function findEmpty(board) {
+    for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+            if (board[row][col] === 0) {
+                return [row, col]; // Return the row and column of the empty cell
+            }
+        }
+    }
+    return null; // No empty space found
+}
+
+var changes = [];
+function solveSudoku(board) {
+    const emptySpot = findEmpty(board);
+    if (!emptySpot) {
+        return true; // Solved
+    }
+
+    const [row, col] = emptySpot;
+
+    for (let num = 1; num <= 9; num++) {
+        if (isValid(board, row, col, num)) {
+            board[row][col] = num; // Place the number
+            changes.push({ row, col, num }); // Track the change
+
+            if (solveSudoku(board)) {
+                return true;
+            }
+
+            // Backtrack
+            board[row][col] = 0; // Reset on backtrack
+        }
+    }
+
+    return false; // No solution found
+}
+
+function isOriginalCell(row, col) {
+    return originalPuzzle[row][col] !== 0;
+}
+
+function fillEmpty(puzzle) {
+    let filledPuzzle = JSON.parse(JSON.stringify(puzzle));;
+    for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+            if (filledPuzzle[i][j] === 0) {
+                filledPuzzle[i][j] = Math.floor(Math.random() * 9) + 1;
+            }
+        }
+    }
+    return filledPuzzle;
+}
+
+function drawGrid(grid) {
+    const gameGrid = document.querySelector('.game-grid');
+    gameGrid.innerHTML = '';
+    for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+            const cell = document.createElement('div');
+            cell.classList.add('cell-sudoku');
+            if (grid[i][j] !== 0) {
+                p = document.createElement("p")
+                cellP = cell.appendChild(p);
+                cellP.innerHTML = grid[i][j];
+                if (isOriginalCell(i, j)) {
+                    cell.classList.add("cell-sudoku-original");
+                }
+            }
+            gameGrid.appendChild(cell);
+        }
+    }
+}
+
 function generatePuzzle() {
     const grid = [];
     for (let i = 0; i < 9; i++) {
@@ -7,37 +108,6 @@ function generatePuzzle() {
             grid[i][j] = 0;
         }
     }
-
-    // Function to check if a number is valid in a cell
-    function isValid(grid, row, col, num) {
-        // Check the row
-        for (let i = 0; i < 9; i++) {
-            if (grid[row][i] === num) {
-                return false;
-            }
-        }
-
-        // Check the column
-        for (let i = 0; i < 9; i++) {
-            if (grid[i][col] === num) {
-                return false;
-            }
-        }
-
-        // Check the box
-        const boxRow = Math.floor(row / 3) * 3;
-        const boxCol = Math.floor(col / 3) * 3;
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 3; j++) {
-                if (grid[boxRow + i][boxCol + j] === num) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
     function solvePuzzle(grid) {
         for (let i = 0; i < 9; i++) {
             for (let j = 0; j < 9; j++) {
@@ -57,156 +127,16 @@ function generatePuzzle() {
         }
         return true;
     }
-
     solvePuzzle(grid);
-
     // Make some cells empty
     for (let i = 0; i < 9; i++) {
         for (let j = 0; j < 9; j++) {
-            if (Math.random() < 0.3) {
+            if (Math.random() < 0.9) {
                 grid[i][j] = 0;
             }
         }
     }
-
     return grid;
-}
-
-function drawGrid(grid) {
-    const gameGrid = document.querySelector('.game-grid');
-    gameGrid.innerHTML = '';
-    for (let i = 0; i < 9; i++) {
-        for (let j = 0; j < 9; j++) {
-            const cell = document.createElement('div');
-            cell.classList.add('cell-sudoku');
-            if (grid[i][j] !== 0) {
-                p = document.createElement("p")
-                cellP = cell.appendChild(p);
-                cellP.innerHTML = grid[i][j];
-                if (isOriginalCell(i, j)) {
-                    cell.classList.add("cell-sudoku-original");
-                }
-            } else {
-                const input = document.createElement('p');
-                input.type = 'number';
-                input.min = 1;
-                input.max = 9;
-                cell.appendChild(input);
-            }
-            gameGrid.appendChild(cell);
-        }
-    }
-}
-
-function isValidPlacement(currentSolution, row, col, num) {
-    // Check the 3x3 subgrid
-    const startRow = Math.floor(row / 3) * 3;
-    const startCol = Math.floor(col / 3) * 3;
-    for (let i = startRow; i < startRow + 3; i++) {
-        for (let j = startCol; j < startCol + 3; j++) {
-            if (currentSolution[i][j] === num) {
-                return false;
-            }
-        }
-    }
-
-    return true; // Valid placement
-}
-
-function getAvailableDigits(currentSolution, row, col) {
-    const availableDigits = [];
-    for (let num = 1; num <= 9; num++) {
-        if (isValidPlacement(currentSolution, row, col, num)) {
-            availableDigits.push(num);
-        }
-    }
-    return availableDigits;
-}
-
-function fillSudoku(currentSolution) {
-    // Create an array to hold the positions of empty cells
-    let emptyCells = [];
-    for (let i = 0; i < 9; i++) {
-        for (let j = 0; j < 9; j++) {
-            if (currentSolution[i][j] === 0) {
-                emptyCells.push({ row: i, col: j });
-            }
-        }
-    }
-
-    // Fill empty cells with logically available digits
-    for (let i = 0; i < emptyCells.length; i++) {
-        const { row, col } = emptyCells[i];
-        const availableDigits = getAvailableDigits(currentSolution, row, col);
-
-        if (availableDigits.length > 0) {
-            // Randomly select one of the available digits
-            const randomIndex = Math.floor(Math.random() * availableDigits.length);
-            currentSolution[row][col] = availableDigits[randomIndex];
-        }
-    }
-    return currentSolution;
-}
-
-
-function switchCells(newSolution, cost, stuckCount) {
-    if (stuckCount == 0)
-        stuckCount = 1
-    for (let i = 0; i < Math.floor(Math.sqrt(cost)); i++) {
-        const add = [0, 3, 6];
-        const subgridRow = add[Math.floor(Math.random() * add.length)];
-        const subgridCol = add[Math.floor(Math.random() * add.length)];
-        const row1 = Math.floor(Math.random() * 3) + subgridRow;
-        const row2 = Math.floor(Math.random() * 3) + subgridRow;
-        const col1 = Math.floor(Math.random() * 3) + subgridCol;
-        const col2 = Math.floor(Math.random() * 3) + subgridCol;
-        if (isOriginalCell(row1, col1) || isOriginalCell(row2, col2)) {
-            continue; // Skip if the cell is an original cell
-        }
-
-        [newSolution[row1][col1], newSolution[row2][col2]] = [newSolution[row2][col2], newSolution[row1][col1]];
-    }
-    return newSolution;
-}
-
-
-var iterationTotal = 0;
-function simulatedAnnealing(currentSolution) {
-    const maxIterations = 5;
-
-    let currentCost = calculateCost(currentSolution);
-    let newSolution = JSON.parse(JSON.stringify(currentSolution));
-    let stuckCount = 0;
-
-    for (let iteration = 0; iteration < maxIterations; iteration++) {
-        let oldSolution = newSolution;
-        newSolution = switchCells(newSolution, currentCost, stuckCount);
-        const newCost = calculateCost(newSolution);
-
-        if (newCost < currentCost) {
-            currentSolution = newSolution;
-            currentCost = newCost;
-            stuckCount = 0;
-            drawGrid(currentSolution);
-        } else {
-            stuckCount++;
-            if (Math.random() < ((Math.min(1, stuckCount / 200)) / (1 / (currentCost / 500)))) {
-                currentSolution = newSolution;
-                currentCost = newCost;
-            }
-            else {
-                newSolution = oldSolution;
-            }
-        }
-
-        if (currentCost === 0) {
-            clearInterval(intervall);
-            break; // Stop if a solution is found
-        }
-    }
-    iterationTotal += maxIterations;
-    addPoint(iterationTotal, currentCost)
-    return currentSolution;
 }
 
 function calculateCost(solution) {
@@ -232,31 +162,12 @@ function calculateCost(solution) {
     }
     return cost;
 }
-
-function isOriginalCell(row, col) {
-    return originalPuzzle[row][col] !== 0;
-}
-
-var puzzle = generatePuzzle();
-const originalPuzzle = JSON.parse(JSON.stringify(puzzle));
-
-puzzle = fillSudoku(puzzle);
-drawGrid(puzzle);
-
-function calcBatch() {
-    puzzle = simulatedAnnealing(puzzle);
-}
-
-var intervall = setInterval(function () { calcBatch(); }, 100);
-
 const ctx = document.getElementById('scatterPlotSudoku').getContext('2d');
 
 const scatterData = {
     datasets: [{
         label: 'Cost at iteration',
-        data: [
-
-        ],
+        data: [],
         backgroundColor: 'rgba(192, 192, 192, 0.6)',
         borderColor: 'rgba(0,0,0, 1)',
         borderWidth: 1,
@@ -285,3 +196,33 @@ function addPoint(x, y) {
     scatterData.datasets[0].data.push({ x: x, y: y });
     myScatterPlot.update();
 }
+
+var puzzle = generatePuzzle();
+const originalPuzzle = JSON.parse(JSON.stringify(puzzle));
+solveSudoku(puzzle)
+puzzle = JSON.parse(JSON.stringify(originalPuzzle));;
+
+var changesCounter = 0;
+calcBatch();
+var sudokuInterval = setInterval(() => {
+    calcBatch()
+}, 200)
+
+function calcBatch() {
+    for (let i = 0; i < 5; i++) {
+        if (changesCounter == changes.length) {
+            break;
+        }
+        let change = changes[changesCounter]
+        let row = change.row;
+        let col = change.col;
+        let num = change.num;
+        puzzle[row][col] = num;
+        changesCounter++;
+    }
+    let puzzleEmptyFilled = fillEmpty(puzzle);
+    drawGrid(puzzleEmptyFilled);
+    let cost = calculateCost(puzzleEmptyFilled);
+    addPoint(changesCounter, cost)
+    if (changes.length == 0) clearInterval(sudokuInterval);
+} 
