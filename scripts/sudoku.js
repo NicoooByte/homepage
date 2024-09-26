@@ -211,6 +211,7 @@ var sudokuInterval = setInterval(() => {
 function calcBatch() {
     for (let i = 0; i < 5; i++) {
         if (changesCounter == changes.length) {
+            clearInterval(sudokuInterval);
             break;
         }
         let change = changes[changesCounter]
@@ -224,5 +225,4 @@ function calcBatch() {
     drawGrid(puzzleEmptyFilled);
     let cost = calculateCost(puzzleEmptyFilled);
     addPoint(changesCounter, cost)
-    if (changes.length == 0) clearInterval(sudokuInterval);
 } 
